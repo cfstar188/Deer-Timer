@@ -1,0 +1,3 @@
+Idea: inspired by the Forest App: https://www.forestapp.cc/
+Timer: string formatting from https://www.youtube.com/watch?v=KseiSR0MCTI
+Deer Drawing: tutorial from https://www.easypeasyandfun.com/how-to-draw-a-deer/
