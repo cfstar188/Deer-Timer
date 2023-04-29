@@ -10,10 +10,11 @@ class Deer:
     def __init__(self, name="Deer"):
         """
         Create a new Deer object.
-        self.status = 0: deer is dead
-        self.status = 1: deer is sad
-        self.status = 2: deer is neutral
-        self.status = 3: deer is happy
+        self.name: name of deer
+        self.status == 0: deer is dead
+        self.status == 1: deer is sad
+        self.status == 2: deer is neutral
+        self.status == 3: deer is happy
         """
         self.status = 3
         self.health = 100
