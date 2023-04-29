@@ -19,20 +19,20 @@ class Deer:
         self.health = 100
         self.name = name
         self.on_fire = False
+        self.checkpoint_index = 2
 
     def set_on_fire(self, health_loss=5, num_secs=1):
         """
         Sets the deer on fire. The deer loses health_loss health for every num_secs seconds.
         """
         self.on_fire = True
-        checkpoint_index = 2
         while self.on_fire and self.health > 0:
             print(f"{self.name} is now at {self.health} health with {self.status} status")  # temporary indicator for deer's health
             time.sleep(num_secs)
             self.health -= health_loss
-            if HEALTH_CHECKPOINTS[checkpoint_index - 1] < self.health <= HEALTH_CHECKPOINTS[checkpoint_index]:
+            if HEALTH_CHECKPOINTS[self.checkpoint_index - 1] < self.health <= HEALTH_CHECKPOINTS[self.checkpoint_index]:
                 self.status -= 1
-                checkpoint_index -= 1
+                self.checkpoint_index -= 1
         self.adjust_health_and_status()
 
     def put_out_fire(self):
@@ -48,7 +48,34 @@ class Deer:
         """
         return self.health == 0
 
+    def get_status(self):
+        """
+        Return status of deer.
+        """
+        return self.status
+
+    def get_health(self):
+        """
+        Return health of deer.
+        """
+        return self.health
+
+    def get_name(self):
+        """
+        Return name of deer.
+        """
+        return self.name
+
+    def is_on_fire(self):
+        """
+        Return whether the deer is on fire.
+        """
+        return self.on_fire
+
     def adjust_health_and_status(self):
+        """
+        Helper method.
+        """
         if self.health <= 0:
             self.status = 0
             self.health = 0
@@ -70,7 +97,7 @@ if __name__ == "__main__":
     # let the deer burn for 11 seconds
     time.sleep(11)
     deer1.put_out_fire()
-    print(f"Name: {deer1.name}, Health: {deer1.health}, Status: {deer1.status}")
+    print(f"Name: {deer1.get_name()}, Health: {deer1.get_health()}, Status: {deer1.get_status()}")
 
     """EXAMPLE 2"""
     print("\nDEER 2 (named Bob)")
@@ -81,4 +108,4 @@ if __name__ == "__main__":
     deer_thread.start()
     deer_thread.join()
 
-    print(f"Name: {deer2.name}, Health: {deer2.health}, Status: {deer2.status}")
+    print(f"Name: {deer2.get_name()}, Health: {deer2.get_health()}, Status: {deer2.get_status()}")
