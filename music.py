@@ -7,8 +7,14 @@ from PyQt5.QtWidgets import QApplication
 import threading
 
 
-class Music():
+class Music:
+    """
+    A music player that plays a background music.
+    """
     def __init__(self):
+        """
+        Initialize a music player.
+        """
         self.app = QApplication(sys.argv)
         self.player = QMediaPlayer()
         self.num = random.randint(0, 3)
@@ -17,6 +23,9 @@ class Music():
         self.mediaContent = None
 
     def getContent(self):
+        """
+        Return the music content of a song.
+        """
         # get the path of the file
         if self.num == 0:
             self.mediaPath = os.path.join(os.getcwd(), "rainSound.mp3")
@@ -31,6 +40,9 @@ class Music():
         return self.mediaContent
 
     def playMusic(self):
+        """
+        Play particular music.
+        """
         self.player.play()
         while self.player.state() == QMediaPlayer.PlayingState:
             self.app.processEvents()
@@ -41,9 +53,15 @@ class Music():
             #     self.stopMusic()
 
     def pauseMusic(self):
+        """
+        If a user presses the pause button, the music will be paused.
+        """
         self.player.pause()
 
     def stopMusic(self):
+        """
+        If a user presses the stop button, the music will be stopped.
+        """
         self.player.stop()
 
 
