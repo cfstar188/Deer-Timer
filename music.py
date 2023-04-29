@@ -4,44 +4,56 @@ import sys
 from PyQt5.QtCore import QUrl
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtWidgets import QApplication
+import threading
 
 
-def getContent(num):
-    # get the path of the file
-    if num == 0:
-        mediaPath = os.path.join(os.getcwd(), "rainSound.mp3")
-    if num == 1:
-        mediaPath = os.path.join(os.getcwd(), "rainSound.mp3")
-    if num == 2:
-        mediaPath = os.path.join(os.getcwd(), "rainSound.mp3")
-    else:
-        mediaPath = os.path.join(os.getcwd(), "rainSound.mp3")
-    mediaUrl = QUrl.fromLocalFile(mediaPath)
-    mediaContent = QMediaContent(mediaUrl)
-    return mediaContent
+class Music():
+    def __init__(self):
+        self.app = QApplication(sys.argv)
+        self.player = QMediaPlayer()
+        self.num = random.randint(0, 3)
+        self.mediaUrl = None
+        self.mediaPath = None
+        self.mediaContent = None
+
+    def getContent(self):
+        # get the path of the file
+        if self.num == 0:
+            self.mediaPath = os.path.join(os.getcwd(), "rainSound.mp3")
+        if self.num == 1:
+            self.mediaPath = os.path.join(os.getcwd(), "rainSound.mp3")
+        if self.num == 2:
+            self.mediaPath = os.path.join(os.getcwd(), "rainSound.mp3")
+        else:
+            self.mediaPath = os.path.join(os.getcwd(), "rainSound.mp3")
+        self.mediaUrl = QUrl.fromLocalFile(self.mediaPath)
+        self.mediaContent = QMediaContent(self.mediaUrl)
+        return self.mediaContent
+
+    def playMusic(self):
+        self.player.play()
+        while self.player.state() == QMediaPlayer.PlayingState:
+            self.app.processEvents()
+            # UI IMPLEMENTATION
+            # if User wants it to pause:
+            #     self.pauseMusic():
+            # elif User wants it to stop:
+            #     self.stopMusic()
+
+    def pauseMusic(self):
+        self.player.pause()
+
+    def stopMusic(self):
+        self.player.stop()
 
 
-def playMusic():
-    player.play()
-    while player.state() == QMediaPlayer.PlayingState:
-        app.processEvents()
-        if User wants it to pause:
-            pauseMusic():
-        elif User wants it to stop:
-            stopMusic()
+if __name__ == "__main__":
+    """ Example use"""
+    musicPlayer = Music()
 
-def pauseMusic():
-    player.pause()
+    content = musicPlayer.getContent()
+    musicPlayer.player.setMedia(content)
 
-def stopMusic():
-    player.stop()
-
-
-app = QApplication(sys.argv)
-player = QMediaPlayer()
-
-num = random.randint(0, 3)
-
-content = getContent(num)
-player.setMedia(content)
-playMusic()
+    musicThread = threading.Thread(target=musicPlayer.playMusic())
+    musicThread.daemon = True
+    musicThread.start()
