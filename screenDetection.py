@@ -10,15 +10,14 @@ class Detector:
         """
         Initialize a detector.
         """
+        self.curr_tab = None
         self.deer_tab = gw.getActiveWindow()
         self.prev_tab = None
         self.i = 1
-        self.counter = 0
 
     def check(self):
         """
         Check if a user switches to a different window.
-        If switching happens for 5 times, return False
         """
         while True:
             self.curr_tab = gw.getActiveWindow()
@@ -27,11 +26,7 @@ class Detector:
             else:
                 if self.curr_tab != self.deer_tab and \
                         self.prev_tab != self.curr_tab and self.i == 0:
-                    # print("Tab switched!")
                     self.i = 1
-                    self.counter += 1
-                    if self.counter == 5:
-                        return False
             self.prev_tab = self.curr_tab
 
 
