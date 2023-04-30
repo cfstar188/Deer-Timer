@@ -8,10 +8,7 @@ from PyQt5.QtCore import QTimer, QTime, QRegExp
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QLCDNumber
 
 musicPlayer = backgroundMusic.Music()
-
-
 screenDetector = screenDetection.Detector()
-
 
 
 class Window(QWidget):
@@ -26,7 +23,6 @@ class Window(QWidget):
         self.prev_tab = None
         self.i = 1
         self.counter = 0
-
 
         self.secs = -1
         self.changeWindows = 0
@@ -44,7 +40,8 @@ class Window(QWidget):
 
         # Create a line edit widget
         self.line_edit = QLineEdit(self)
-        self.line_edit.setStyleSheet("QLineEdit { background-color: transparent; color: #35312C; }")
+        self.line_edit.setStyleSheet(
+            "QLineEdit { background-color: transparent; color: #35312C; }")
         hourreg = QRegExp("[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]")
         hourvalid = QRegExpValidator(hourreg)
         self.line_edit.setValidator(hourvalid)
@@ -69,20 +66,17 @@ class Window(QWidget):
         self.setGeometry(200, 200, 900, 450)
         self.setWindowTitle("Focus")
 
-        # creat timer
+        # create timer
         self.lcd = QLCDNumber(self)
         self.lcd.setDigitCount(8)
         self.lcd.setMode(QLCDNumber.Dec)
-        self.lcd.setStyleSheet("QLCDNumber { background-color: transparent; color: #B3A28A; }")
+        self.lcd.setStyleSheet(
+            "QLCDNumber { background-color: transparent; color: #B3A28A; }")
         self.lcd.setFixedSize(450, 250)
         self.lcd.move(205, -30)
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.showTime)
         self.timer.start(1000)
-        # check window timer
-        # self.checkWindows = QTimer()
-        # self.checkWindows.timeout.connect(self.checking)
-        # self.checkWindows.start(1000)
 
         # Create a new timer for the countdown
         self.countdown_timer = QTimer(self)
@@ -99,12 +93,10 @@ class Window(QWidget):
             self.secs = input_num * 60
             self.timer.stop()
             self.countdown_timer.start(1000)
-            # self.checking()
-            detector_thread = threading.Thread(target=screenDetector.check())
+            detector_thread = threading.Thread(target=screenDetector.check)
             detector_thread.start()
             backgroundMusic.run(musicPlayer)
             self.deer_tab = gw.getActiveWindow()
-            # screenDetection.check(screenDetector)
 
     def showTime(self):
         """
@@ -119,7 +111,9 @@ class Window(QWidget):
         """
         if self.secs > 0:
             self.secs -= 1
-            self.lcd.display(QTime.fromMSecsSinceStartOfDay(self.secs * 1000).toString('hh:mm:ss'))
+            self.lcd.display(
+                QTime.fromMSecsSinceStartOfDay(self.secs * 1000).toString(
+                    'hh:mm:ss'))
         else:
             self.countdown_timer.stop()
             self.timer.start()
@@ -129,15 +123,3 @@ class Window(QWidget):
         Update the background of the app.
         """
         self.background_image.setPixmap(QPixmap(imgname))
-
-    # def checking(self):
-    #     # if not self.window().isActiveWindow() and not self.other:
-    #     #     self.changeWindows += 1
-    #     #     self.other = True
-    #     #     self.update_background()  # change the background image when detect switch
-    #     #     if self.changeWindows > 5: # After
-    #     #         print("down")
-    #     # if self.window().isActiveWindow() and self.other:
-    #     #     self.other = False
-    #     screenDetector.check()
-
