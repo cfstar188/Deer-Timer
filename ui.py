@@ -4,7 +4,9 @@ import threading
 import backgroundMusic
 import main
 import screenDetection
+import Deer
 import pygetwindow as gw
+import time
 from PyQt5.QtGui import QPixmap, QRegExpValidator
 from PyQt5.QtCore import QTimer, QTime, QRegExp
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, \
@@ -32,11 +34,6 @@ class Window(QWidget):
         self.changeWindows = 0
         self.other = False
 
-        # Add a background image
-        self.background_image = QLabel(self)
-        self.background_image.setGeometry(0, 0, 900, 450)
-        self.background_image.setPixmap(QPixmap("defimg.jpeg"))
-
         # Create a label
         self.label = QLabel("Focus time:", self)
         self.label.setStyleSheet("QLabel { color : #35312C; }")
@@ -54,6 +51,7 @@ class Window(QWidget):
         # Create a button
         btnStart = QPushButton("Start", self)
         btnStart.move(495, 410)
+        btnStart.setFixedSize(70, 25)
         btnVolStop = QPushButton("Mute", self)
         btnVolStop.setFixedSize(70, 25)
         btnVolStop.move(5, 410)
@@ -72,7 +70,7 @@ class Window(QWidget):
 
         # Set the window properties
         self.setGeometry(200, 200, 900, 450)
-        self.setWindowTitle("Focus")
+        self.setWindowTitle("Deer Timer")
 
         # create timer
         self.lcd = QLCDNumber(self)
@@ -81,7 +79,7 @@ class Window(QWidget):
         self.lcd.setStyleSheet(
             "QLCDNumber { background-color: transparent; color: #B3A28A; }")
         self.lcd.setFixedSize(450, 250)
-        self.lcd.move(205, -30)
+        self.lcd.move(215, -75)
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.showTime)
         self.timer.start(1000)
@@ -89,6 +87,17 @@ class Window(QWidget):
         # Create a new timer for the countdown
         self.countdown_timer = QTimer(self)
         self.countdown_timer.timeout.connect(self.update_time)
+
+        # Create a new deer
+        deer_pixmap = QPixmap('deer_photos/3_normal.png')
+        deer_pixmap = deer_pixmap.scaled(330, 330)
+        deer_label = QLabel(self)
+        deer_label.setPixmap(deer_pixmap)
+        deer_label.setGeometry(280, 95, 330, 330)
+        self.deer_label = deer_label
+        self.deer = Deer.Deer()
+
+        self.screenDetectorStatus = "DEERTAB"
 
     def closeEvent(self, event):
         """
@@ -111,11 +120,13 @@ class Window(QWidget):
             self.secs = input_num * 60
             self.timer.stop()
             self.countdown_timer.start(1000)
-            detector_thread = threading.Thread(target=screenDetector.check)
+            detector_thread = threading.Thread(target=screenDetector.check, args=(self,))
             detector_thread.daemon = True
             detector_thread.start()
-            backgroundMusic.run(musicPlayer)
-            self.deer_tab = gw.getActiveWindow()
+            bg_music_thread = threading.Thread(target=backgroundMusic.run, args=(musicPlayer,))
+            bg_music_thread.daemon = True
+            bg_music_thread.start()
+
 
     def showTime(self):
         """
@@ -129,6 +140,7 @@ class Window(QWidget):
         Display the countdown time.
         """
         if self.secs > 0:
+            self.check_deer()
             self.secs -= 1
             self.lcd.display(
                 QTime.fromMSecsSinceStartOfDay(self.secs * 1000).toString(
@@ -137,8 +149,23 @@ class Window(QWidget):
             self.countdown_timer.stop()
             self.timer.start()
 
-    def update_background(self, imgname):
+    def update_deer(self, filename):
         """
-        Update the background of the app.
+        Update self.deer_pixmap with new pixmap
         """
-        self.background_image.setPixmap(QPixmap(imgname))
+        deer_pixmap = QPixmap(filename)
+        deer_pixmap = deer_pixmap.scaled(330, 330)
+        self.deer_label.setPixmap(deer_pixmap)
+        self.deer_label.setGeometry(280, 95, 330, 330)
+
+    def check_deer(self):
+        if self.screenDetectorStatus == "DEERTAB":
+            self.deer.put_out_fire()
+            filename = f'deer_photos/{self.deer.status}_normal.png'
+            self.update_deer(filename)
+        else:
+            deer_thread = threading.Thread(target=self.deer.set_on_fire)
+            deer_thread.daemon = True
+            deer_thread.start()
+            filename = f'deer_photos/{self.deer.status}_fire/frame2.png'
+            self.update_deer(filename)

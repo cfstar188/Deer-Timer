@@ -14,7 +14,7 @@ class Detector:
         self.prev_tab = None
         self.i = 1
 
-    def check(self):
+    def check(self, window):
         """
         Check if a user switches to a different window.
         """
@@ -22,8 +22,10 @@ class Detector:
             self.curr_tab = gw.getActiveWindow()
             if self.curr_tab == self.deer_tab:
                 self.i = 0
+                window.screenDetectorStatus = "DEERTAB"
             else:
                 if self.curr_tab != self.deer_tab and \
                         self.prev_tab != self.curr_tab and self.i == 0:
                     self.i = 1
+                    window.screenDetectorStatus = "ANOTHERTAB"
             self.prev_tab = self.curr_tab
