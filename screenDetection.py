@@ -1,5 +1,4 @@
 import pygetwindow as gw
-import threading
 
 
 class Detector:
@@ -28,10 +27,3 @@ class Detector:
                         self.prev_tab != self.curr_tab and self.i == 0:
                     self.i = 1
             self.prev_tab = self.curr_tab
-
-
-if __name__ == "__main__":
-    """ Example use"""
-    detector = Detector()
-
-    detector_thread = threading.Thread(target=detector.check())
