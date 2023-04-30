@@ -1,11 +1,15 @@
+import sys
 import threading
 
 import backgroundMusic
+import main
 import screenDetection
 import pygetwindow as gw
 from PyQt5.QtGui import QPixmap, QRegExpValidator
 from PyQt5.QtCore import QTimer, QTime, QRegExp
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QLCDNumber
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, \
+    QPushButton, QLCDNumber
+
 
 musicPlayer = backgroundMusic.Music()
 screenDetector = screenDetection.Detector()
@@ -56,6 +60,10 @@ class Window(QWidget):
         btnVolResume = QPushButton("Resume", self)
         btnVolResume.setFixedSize(70, 25)
         btnVolResume.move(5, 385)
+        btnQuit = QPushButton("Exit", self)
+        btnQuit.setFixedSize(70, 25)
+        btnQuit.move(820, 410)
+        btnQuit.clicked.connect(self.close)
 
         # Connect the button to a function
         btnStart.clicked.connect(self.get_input)
@@ -82,6 +90,16 @@ class Window(QWidget):
         self.countdown_timer = QTimer(self)
         self.countdown_timer.timeout.connect(self.update_time)
 
+    def closeEvent(self, event):
+        """
+        Override the default close event handler.
+        The modified handler exits the program and stops the music.
+        """
+        musicPlayer.stopMusic()
+        event.accept()
+        main.app.quit()
+        sys.exit()
+
     def get_input(self):
         """
         Get the input from user and start the countdown and music.
@@ -94,6 +112,7 @@ class Window(QWidget):
             self.timer.stop()
             self.countdown_timer.start(1000)
             detector_thread = threading.Thread(target=screenDetector.check)
+            detector_thread.daemon = True
             detector_thread.start()
             backgroundMusic.run(musicPlayer)
             self.deer_tab = gw.getActiveWindow()
