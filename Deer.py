@@ -1,7 +1,7 @@
 import time
 import threading
 
-HEALTH_CHECKPOINTS = [0, 33, 66]  # a deer's status changes when its health reaches or goes below these thresholds
+HEALTH_CHECKPOINTS = [0, 49, 99]  # a deer's status changes when its health reaches or goes below these thresholds
 
 
 class Deer:
