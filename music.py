@@ -2,7 +2,7 @@ import random
 import os.path
 import sys
 from PyQt5.QtCore import QUrl
-from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
+from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer, QMediaPlaylist
 from PyQt5.QtWidgets import QApplication
 import threading
 
@@ -17,11 +17,11 @@ class Music:
         """
         self.app = QApplication(sys.argv)
         self.player = QMediaPlayer()
+        self.playlist = QMediaPlaylist()
         self.num = random.randint(0, 3)
         self.mediaUrl = None
         self.mediaPath = None
         self.mediaContent = None
-        self.naturalStop = 0
 
     def getContent(self):
         """
@@ -44,6 +44,10 @@ class Music:
         """
         Play particular music.
         """
+        self.playlist.addMedia(self.getContent())
+        self.playlist.setPlaybackMode(self.playlist.Loop)
+        self.player.setPlaylist(self.playlist)
+
         self.player.play()
 
     def stopMusic(self):
@@ -51,7 +55,6 @@ class Music:
         If a user presses the stop button, the music will be stopped.
         """
         self.player.stop()
-        self.naturalStop = 1
 
     def pauseMusic(self):
         """
@@ -68,16 +71,14 @@ class Music:
 
 if __name__ == "__main__":
     """ Example use"""
+    musicPlayer = Music()
+
+    content = musicPlayer.getContent()
+    musicPlayer.player.setMedia(content)
+
+    musicThread = threading.Thread(target=musicPlayer.playMusic())
+    musicThread.daemon = True
+    musicThread.start()
+
     while True:
-        musicPlayer = Music()
-
-        content = musicPlayer.getContent()
-        musicPlayer.player.setMedia(content)
-
-        musicThread = threading.Thread(target=musicPlayer.playMusic())
-        musicThread.daemon = True
-        musicThread.start()
-
-        while True:
-            musicPlayer.app.processEvents()
-
+        musicPlayer.app.processEvents()
