@@ -21,6 +21,7 @@ class Music:
         self.mediaUrl = None
         self.mediaPath = None
         self.mediaContent = None
+        self.naturalStop = 0
 
     def getContent(self):
         """
@@ -28,13 +29,13 @@ class Music:
         """
         # get the path of the file
         if self.num == 0:
-            self.mediaPath = os.path.join(os.getcwd(), "rainSound.mp3")
-        if self.num == 1:
-            self.mediaPath = os.path.join(os.getcwd(), "rainSound.mp3")
-        if self.num == 2:
-            self.mediaPath = os.path.join(os.getcwd(), "rainSound.mp3")
+            self.mediaPath = os.path.join(os.getcwd(), "rain.mp3")
+        elif self.num == 1:
+            self.mediaPath = os.path.join(os.getcwd(), "fire.mp3")
+        elif self.num == 2:
+            self.mediaPath = os.path.join(os.getcwd(), "bird.mp3")
         else:
-            self.mediaPath = os.path.join(os.getcwd(), "rainSound.mp3")
+            self.mediaPath = os.path.join(os.getcwd(), "piano.mp3")
         self.mediaUrl = QUrl.fromLocalFile(self.mediaPath)
         self.mediaContent = QMediaContent(self.mediaUrl)
         return self.mediaContent
@@ -44,13 +45,13 @@ class Music:
         Play particular music.
         """
         self.player.play()
-        while self.player.state() == QMediaPlayer.PlayingState:
-            self.app.processEvents()
-            # UI IMPLEMENTATION
-            # if User wants it to pause:
-            #     self.pauseMusic():
-            # elif User wants it to stop:
-            #     self.stopMusic()
+
+    def stopMusic(self):
+        """
+        If a user presses the stop button, the music will be stopped.
+        """
+        self.player.stop()
+        self.naturalStop = 1
 
     def pauseMusic(self):
         """
@@ -58,20 +59,25 @@ class Music:
         """
         self.player.pause()
 
-    def stopMusic(self):
+    def resumeMusic(self):
         """
-        If a user presses the stop button, the music will be stopped.
+        If a user presses the resume button, the music will be paused.
         """
-        self.player.stop()
+        self.player.resume()
 
 
 if __name__ == "__main__":
     """ Example use"""
-    musicPlayer = Music()
+    while True:
+        musicPlayer = Music()
 
-    content = musicPlayer.getContent()
-    musicPlayer.player.setMedia(content)
+        content = musicPlayer.getContent()
+        musicPlayer.player.setMedia(content)
 
-    musicThread = threading.Thread(target=musicPlayer.playMusic())
-    musicThread.daemon = True
-    musicThread.start()
+        musicThread = threading.Thread(target=musicPlayer.playMusic())
+        musicThread.daemon = True
+        musicThread.start()
+
+        while True:
+            musicPlayer.app.processEvents()
+
